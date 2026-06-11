@@ -206,12 +206,14 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 if "agent_ready" not in st.session_state:
     st.session_state.agent_ready = False
-if "uploaded_file" not in st.session_state:
-    st.session_state.uploaded_file = None
+if "file_data" not in st.session_state:
+    st.session_state.file_data = None  # dict: {"name", "bytes", "mime"}
 if "active_api_key" not in st.session_state:
     st.session_state.active_api_key = _get_default_api_key()
 if "init_model" not in st.session_state:
     st.session_state.init_model = ""
+if "selected_model" not in st.session_state:
+    st.session_state.selected_model = AVAILABLE_MODELS[0]
 
 
 # ---------------------------------------------------------------------------
@@ -253,28 +255,23 @@ with st.sidebar:
     # -- Model selector --
     st.markdown("### Configuration")
 
-    current_model_index = (
-        AVAILABLE_MODELS.index(st.session_state.init_model)
-        if st.session_state.init_model in AVAILABLE_MODELS
-        else 0
-    )
+    def _on_model_change():
+        """Callback: re-initialize agent when the user picks a different model."""
+        new_model = st.session_state.selected_model
+        if (
+            st.session_state.agent_ready
+            and st.session_state.active_api_key
+            and new_model != st.session_state.init_model
+        ):
+            _auto_initialize(st.session_state.active_api_key, new_model)
+
     model_name = st.selectbox(
         "Model",
         AVAILABLE_MODELS,
-        index=current_model_index,
+        key="selected_model",
+        on_change=_on_model_change,
         help="Select the Gemini model variant to use.",
     )
-
-    # Re-initialize if user switches model while already connected
-    if (
-        st.session_state.agent_ready
-        and st.session_state.init_model
-        and model_name != st.session_state.init_model
-    ):
-        with st.spinner("Switching model..."):
-            _auto_initialize(st.session_state.active_api_key, model_name)
-            if st.session_state.agent_ready:
-                st.session_state.init_model = model_name
 
     # -- Change API Key (collapsible) --
     with st.expander("Change API Key"):
@@ -336,8 +333,15 @@ with st.sidebar:
         type=["pdf", "png", "jpg", "jpeg", "csv", "txt", "md"],
     )
     if uploaded is not None:
-        st.session_state.uploaded_file = uploaded
+        # Eagerly snapshot the bytes so they survive Streamlit Cloud reruns
+        st.session_state.file_data = {
+            "name": uploaded.name,
+            "bytes": uploaded.getvalue(),
+            "mime": uploaded.type or "application/octet-stream",
+        }
         st.caption(f"Attached: {uploaded.name}")
+    elif st.session_state.file_data:
+        st.caption(f"Attached: {st.session_state.file_data['name']}")  
 
     st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
 
@@ -362,7 +366,8 @@ with st.sidebar:
         if st.button("New Session", use_container_width=True):
             st.session_state.messages = []
             st.session_state.agent_ready = False
-            st.session_state.uploaded_file = None
+            st.session_state.file_data = None
+            st.session_state.init_model = ""
             try:
                 requests.delete(
                     f"{BACKEND_URL}/session/{st.session_state.session_id}",
@@ -411,9 +416,9 @@ if prompt := st.chat_input("Ask a research question...", disabled=not st.session
         "session_id": st.session_state.session_id,
     }
     files = None
-    if st.session_state.uploaded_file is not None:
-        uf = st.session_state.uploaded_file
-        files = {"file": (uf.name, uf.getvalue(), uf.type)}
+    if st.session_state.file_data is not None:
+        fd = st.session_state.file_data
+        files = {"file": (fd["name"], fd["bytes"], fd["mime"])}
 
     # Call the backend
     with st.chat_message("assistant"):
@@ -442,4 +447,4 @@ if prompt := st.chat_input("Ask a research question...", disabled=not st.session
     st.session_state.messages.append({"role": "assistant", "content": answer})
 
     # Clear file after sending so it's not re-sent on every message
-    st.session_state.uploaded_file = None
+    st.session_state.file_data = None
