@@ -46,8 +46,13 @@ st.markdown(
     }
 
     /* ---- Hide default Streamlit clutter ---- */
-    #MainMenu, footer, header {visibility: hidden;}
+    #MainMenu, footer {visibility: hidden;}
     .stDeployButton {display: none;}
+    /* Keep the sidebar toggle arrow visible but hide the rest of the header bar */
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+        backdrop-filter: none !important;
+    }
 
     /* ---- Sidebar ---- */
     section[data-testid="stSidebar"] {
