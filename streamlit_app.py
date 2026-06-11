@@ -29,32 +29,30 @@ st.set_page_config(
     page_title="StemAgent",
     page_icon="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>S</text></svg>",
     layout="centered",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 # ---------------------------------------------------------------------------
-# Custom CSS — minimal, clean, premium dark UI
+# Custom CSS
 # ---------------------------------------------------------------------------
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    /* ---- Global ---- */
     html, body, [class*="css"] {
         font-family: 'Inter', sans-serif;
     }
 
-    /* ---- Hide default Streamlit clutter ---- */
+    /* Hide Streamlit defaults */
     #MainMenu, footer {visibility: hidden;}
     .stDeployButton {display: none;}
-    /* Keep the sidebar toggle arrow visible but hide the rest of the header bar */
     header[data-testid="stHeader"] {
         background: transparent !important;
         backdrop-filter: none !important;
     }
 
-    /* ---- Sidebar ---- */
+    /* Sidebar */
     section[data-testid="stSidebar"] {
         background: #111118;
         border-right: 1px solid rgba(124, 58, 237, 0.12);
@@ -66,7 +64,7 @@ st.markdown(
         letter-spacing: -0.02em;
     }
 
-    /* ---- Chat messages ---- */
+    /* Chat messages */
     .stChatMessage {
         border-radius: 12px !important;
         padding: 1rem 1.25rem !important;
@@ -79,7 +77,7 @@ st.markdown(
         color: #d4d4d8;
     }
 
-    /* ---- Chat input ---- */
+    /* Chat input */
     .stChatInput > div {
         border-radius: 14px !important;
         border: 1px solid rgba(124, 58, 237, 0.25) !important;
@@ -91,7 +89,7 @@ st.markdown(
         box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1) !important;
     }
 
-    /* ---- Buttons ---- */
+    /* Buttons */
     .stButton > button {
         border-radius: 10px;
         font-weight: 500;
@@ -103,7 +101,7 @@ st.markdown(
         box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
     }
 
-    /* ---- Status pill ---- */
+    /* Status pill */
     .status-pill {
         display: inline-flex;
         align-items: center;
@@ -119,36 +117,80 @@ st.markdown(
         color: #4ade80;
         border: 1px solid rgba(34, 197, 94, 0.2);
     }
-    .status-disconnected {
-        background: rgba(239, 68, 68, 0.12);
-        color: #f87171;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-    }
 
-    /* ---- Divider ---- */
+    /* Divider */
     .sidebar-divider {
         height: 1px;
         background: linear-gradient(90deg, transparent, rgba(124,58,237,0.2), transparent);
         margin: 1.25rem 0;
     }
 
-    /* ---- Hero header ---- */
-    .hero-title {
-        font-size: 1.75rem;
-        font-weight: 600;
-        letter-spacing: -0.03em;
-        color: #fafafa;
-        margin: 0;
-        padding: 0;
+    /* ---- Setup page ---- */
+    .setup-container {
+        max-width: 460px;
+        margin: 6vh auto 0 auto;
+        padding: 2.5rem;
+        border-radius: 20px;
+        background: #16161e;
+        border: 1px solid rgba(124, 58, 237, 0.15);
+        box-shadow: 0 8px 40px rgba(0,0,0,0.4);
     }
-    .hero-sub {
-        font-size: 0.85rem;
+    .setup-title {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: #fafafa;
+        text-align: center;
+        margin: 0 0 4px 0;
+    }
+    .setup-sub {
+        font-size: 0.9rem;
         color: #71717a;
-        margin-top: 2px;
-        font-weight: 400;
+        text-align: center;
+        margin: 0 0 2rem 0;
+        line-height: 1.5;
+    }
+    .setup-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #a1a1aa;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 6px;
+    }
+    .setup-hint {
+        font-size: 0.78rem;
+        color: #52525b;
+        margin-top: 4px;
     }
 
-    /* ---- Empty state ---- */
+    /* Sidebar header */
+    .sidebar-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: #fafafa;
+        margin: 0;
+    }
+    .sidebar-sub {
+        font-size: 0.78rem;
+        color: #71717a;
+        margin-top: 2px;
+    }
+    .model-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: #c4b5fd;
+        background: rgba(124, 58, 237, 0.1);
+        border: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    /* Empty state */
     .empty-state {
         display: flex;
         flex-direction: column;
@@ -171,34 +213,27 @@ st.markdown(
         line-height: 1.5;
     }
 
-    /* ---- File upload area ---- */
-    [data-testid="stFileUploader"] {
-        border-radius: 10px;
-    }
-    [data-testid="stFileUploader"] > div {
-        border-radius: 10px !important;
-    }
+    /* File upload */
+    [data-testid="stFileUploader"] { border-radius: 10px; }
+    [data-testid="stFileUploader"] > div { border-radius: 10px !important; }
 
-    /* ---- Spinner ---- */
-    .stSpinner > div {
-        border-top-color: #7C3AED !important;
-    }
+    /* Spinner */
+    .stSpinner > div { border-top-color: #7C3AED !important; }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
+
 # ---------------------------------------------------------------------------
-# Resolve default API key from environment / Streamlit secrets
+# Helpers
 # ---------------------------------------------------------------------------
 def _get_default_api_key() -> str:
-    """Return the pre-configured API key, or empty string if none."""
-    # Streamlit Cloud stores secrets in st.secrets
+    """Return the pre-configured API key, or empty string."""
     try:
         return st.secrets["GOOGLE_API_KEY"]
     except (KeyError, FileNotFoundError):
         pass
-    # Fallback to OS environment variable
     return os.environ.get("GOOGLE_API_KEY", "")
 
 
@@ -212,244 +247,253 @@ if "messages" not in st.session_state:
 if "agent_ready" not in st.session_state:
     st.session_state.agent_ready = False
 if "file_data" not in st.session_state:
-    st.session_state.file_data = None  # dict: {"name", "bytes", "mime"}
+    st.session_state.file_data = None
 if "active_api_key" not in st.session_state:
     st.session_state.active_api_key = _get_default_api_key()
-if "init_model" not in st.session_state:
-    st.session_state.init_model = ""
-if "selected_model" not in st.session_state:
-    st.session_state.selected_model = AVAILABLE_MODELS[0]
+if "active_model" not in st.session_state:
+    st.session_state.active_model = ""
 
 
-# ---------------------------------------------------------------------------
-# Auto-initialize on first load if a default key exists
-# ---------------------------------------------------------------------------
-def _auto_initialize(api_key: str, model: str):
-    """Call the backend /initialize endpoint and update session state."""
-    try:
-        resp = requests.post(
-            f"{BACKEND_URL}/initialize",
-            data={"api_key": api_key, "model_name": model},
-            timeout=60,
-        )
-        if resp.status_code == 200:
-            st.session_state.agent_ready = True
-            st.session_state.init_model = model
-        else:
-            st.session_state.agent_ready = False
-    except Exception:
-        st.session_state.agent_ready = False
+# ╔═════════════════════════════════════════════════════════════════════════╗
+# ║  PAGE 1 — SETUP                                                       ║
+# ╚═════════════════════════════════════════════════════════════════════════╝
+def render_setup_page():
+    """Startup page: model selection + optional API key override."""
 
+    st.markdown('<div class="setup-container">', unsafe_allow_html=True)
 
-if (
-    not st.session_state.agent_ready
-    and st.session_state.active_api_key
-    and not st.session_state.init_model
-):
-    _auto_initialize(st.session_state.active_api_key, AVAILABLE_MODELS[0])
-
-# ---------------------------------------------------------------------------
-# Sidebar
-# ---------------------------------------------------------------------------
-with st.sidebar:
-    st.markdown('<p class="hero-title">StemAgent</p>', unsafe_allow_html=True)
-    st.markdown('<p class="hero-sub">Research assistant powered by LangChain</p>', unsafe_allow_html=True)
-
-    st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
-
-    # -- Model selector --
-    st.markdown("### Configuration")
-
-    def _on_model_change():
-        """Callback: re-initialize agent when the user picks a different model."""
-        new_model = st.session_state.selected_model
-        if (
-            st.session_state.agent_ready
-            and st.session_state.active_api_key
-            and new_model != st.session_state.init_model
-        ):
-            _auto_initialize(st.session_state.active_api_key, new_model)
-
-    model_name = st.selectbox(
-        "Model",
-        AVAILABLE_MODELS,
-        key="selected_model",
-        on_change=_on_model_change,
-        help="Select the Gemini model variant to use.",
+    st.markdown('<p class="setup-title">StemAgent</p>', unsafe_allow_html=True)
+    st.markdown(
+        '<p class="setup-sub">Configure your research assistant, then start chatting.</p>',
+        unsafe_allow_html=True,
     )
 
-    # -- Change API Key (collapsible) --
-    with st.expander("Change API Key"):
-        new_key = st.text_input(
-            "New Google API Key",
+    # ---- Model ----
+    st.markdown('<p class="setup-label">Model</p>', unsafe_allow_html=True)
+    model = st.selectbox(
+        "Model",
+        AVAILABLE_MODELS,
+        index=0,
+        label_visibility="collapsed",
+        key="setup_model",
+    )
+
+    st.markdown("", unsafe_allow_html=True)  # spacer
+
+    # ---- API Key ----
+    has_default_key = bool(st.session_state.active_api_key)
+
+    if has_default_key:
+        st.markdown('<p class="setup-label">API Key</p>', unsafe_allow_html=True)
+        st.markdown(
+            '<p class="setup-hint">A default key is configured. '
+            'Override it below if needed, or leave blank to use the default.</p>',
+            unsafe_allow_html=True,
+        )
+        override_key = st.text_input(
+            "Override API Key",
             type="password",
-            placeholder="Paste a different key here",
+            placeholder="Paste a different key (optional)",
             label_visibility="collapsed",
+            key="setup_override_key",
         )
-        apply_btn = st.button(
-            "Apply Key",
-            use_container_width=True,
-            disabled=not new_key,
+    else:
+        st.markdown('<p class="setup-label">Google API Key</p>', unsafe_allow_html=True)
+        override_key = st.text_input(
+            "API Key",
+            type="password",
+            placeholder="Enter your Gemini API key",
+            label_visibility="collapsed",
+            key="setup_override_key",
         )
-        if apply_btn and new_key:
-            with st.spinner("Re-initializing with new key..."):
-                try:
-                    resp = requests.post(
-                        f"{BACKEND_URL}/initialize",
-                        data={"api_key": new_key, "model_name": model_name},
-                        timeout=60,
-                    )
-                    if resp.status_code == 200:
-                        st.session_state.active_api_key = new_key
-                        st.session_state.agent_ready = True
-                        st.session_state.init_model = model_name
-                        st.success("Key updated. Agent is ready.")
-                    else:
-                        detail = resp.json().get("detail", "Unknown error")
-                        st.error(f"Invalid key: {detail}")
-                except requests.exceptions.ConnectionError:
-                    st.error("Could not reach the backend. Is it running?")
-                except Exception as exc:
-                    st.error(f"Error: {exc}")
 
-    # Show a hint if no key at all
-    if not st.session_state.active_api_key and not st.session_state.agent_ready:
-        st.caption("No default key found. Expand 'Change API Key' above to set one.")
+    st.markdown("", unsafe_allow_html=True)  # spacer
 
-    # -- Status --
-    if st.session_state.agent_ready:
+    # ---- Launch button ----
+    api_key_to_use = override_key.strip() if override_key.strip() else st.session_state.active_api_key
+    can_launch = bool(api_key_to_use)
+
+    if st.button("Start Session", use_container_width=True, disabled=not can_launch, type="primary"):
+        with st.spinner("Initializing agent..."):
+            try:
+                resp = requests.post(
+                    f"{BACKEND_URL}/initialize",
+                    data={"api_key": api_key_to_use, "model_name": model},
+                    timeout=60,
+                )
+                if resp.status_code == 200:
+                    st.session_state.active_api_key = api_key_to_use
+                    st.session_state.active_model = model
+                    st.session_state.agent_ready = True
+                    st.rerun()
+                else:
+                    detail = resp.json().get("detail", "Unknown error")
+                    st.error(f"Initialization failed: {detail}")
+            except requests.exceptions.ConnectionError:
+                st.error("Could not reach the backend. Is it running?")
+            except Exception as exc:
+                st.error(f"Error: {exc}")
+
+    if not can_launch:
+        st.caption("Enter an API key to continue.")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ╔═════════════════════════════════════════════════════════════════════════╗
+# ║  PAGE 2 — CHAT                                                        ║
+# ╚═════════════════════════════════════════════════════════════════════════╝
+def render_chat_page():
+    """Main chat UI with a minimal sidebar."""
+
+    # ---- Sidebar ----
+    with st.sidebar:
+        st.markdown('<p class="sidebar-title">StemAgent</p>', unsafe_allow_html=True)
+        st.markdown('<p class="sidebar-sub">Research assistant</p>', unsafe_allow_html=True)
+
+        st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+
+        # Active model display
+        st.markdown(
+            f'<span class="model-badge">{st.session_state.active_model}</span>',
+            unsafe_allow_html=True,
+        )
         st.markdown(
             '<span class="status-pill status-connected">Connected</span>',
             unsafe_allow_html=True,
         )
-    else:
+
+        st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+
+        # File upload
+        st.markdown("### Attach File")
+        uploaded = st.file_uploader(
+            "Upload a document or image",
+            label_visibility="collapsed",
+            type=["pdf", "png", "jpg", "jpeg", "csv", "txt", "md"],
+        )
+        if uploaded is not None:
+            st.session_state.file_data = {
+                "name": uploaded.name,
+                "bytes": uploaded.getvalue(),
+                "mime": uploaded.type or "application/octet-stream",
+            }
+            st.caption(f"Attached: {uploaded.name}")
+        elif st.session_state.file_data:
+            st.caption(f"Attached: {st.session_state.file_data['name']}")
+
+        st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+
+        # Session controls
+        st.markdown("### Session")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Clear Chat", use_container_width=True):
+                st.session_state.messages = []
+                try:
+                    requests.delete(
+                        f"{BACKEND_URL}/session/{st.session_state.session_id}",
+                        timeout=10,
+                    )
+                except Exception:
+                    pass
+                st.session_state.session_id = str(uuid.uuid4())
+                st.rerun()
+        with col2:
+            if st.button("New Session", use_container_width=True):
+                st.session_state.messages = []
+                st.session_state.file_data = None
+                try:
+                    requests.delete(
+                        f"{BACKEND_URL}/session/{st.session_state.session_id}",
+                        timeout=10,
+                    )
+                except Exception:
+                    pass
+                st.session_state.session_id = str(uuid.uuid4())
+                st.rerun()
+
+        st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+
+        # Reconfigure — go back to setup
+        if st.button("Reconfigure", use_container_width=True):
+            st.session_state.agent_ready = False
+            st.session_state.active_model = ""
+            st.session_state.messages = []
+            st.session_state.file_data = None
+            try:
+                requests.delete(
+                    f"{BACKEND_URL}/session/{st.session_state.session_id}",
+                    timeout=10,
+                )
+            except Exception:
+                pass
+            st.session_state.session_id = str(uuid.uuid4())
+            st.rerun()
+
+    # ---- Chat area ----
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    if not st.session_state.messages:
         st.markdown(
-            '<span class="status-pill status-disconnected">Not initialized</span>',
+            """
+            <div class="empty-state">
+                <h2>What would you like to research?</h2>
+                <p>Ask any research question. Attach files from the sidebar for document-aware queries.</p>
+            </div>
+            """,
             unsafe_allow_html=True,
         )
 
-    st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+    # Chat input
+    if prompt := st.chat_input("Ask a research question..."):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
 
-    # -- File upload --
-    st.markdown("### Attach File")
-    uploaded = st.file_uploader(
-        "Upload a document or image",
-        label_visibility="collapsed",
-        type=["pdf", "png", "jpg", "jpeg", "csv", "txt", "md"],
-    )
-    if uploaded is not None:
-        # Eagerly snapshot the bytes so they survive Streamlit Cloud reruns
-        st.session_state.file_data = {
-            "name": uploaded.name,
-            "bytes": uploaded.getvalue(),
-            "mime": uploaded.type or "application/octet-stream",
+        form_data = {
+            "message": prompt,
+            "session_id": st.session_state.session_id,
         }
-        st.caption(f"Attached: {uploaded.name}")
-    elif st.session_state.file_data:
-        st.caption(f"Attached: {st.session_state.file_data['name']}")  
+        files = None
+        if st.session_state.file_data is not None:
+            fd = st.session_state.file_data
+            files = {"file": (fd["name"], fd["bytes"], fd["mime"])}
 
-    st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+        with st.chat_message("assistant"):
+            with st.spinner("Thinking..."):
+                try:
+                    resp = requests.post(
+                        f"{BACKEND_URL}/chat",
+                        data=form_data,
+                        files=files,
+                        timeout=300,
+                    )
+                    if resp.status_code == 200:
+                        body = resp.json()
+                        answer = body.get("response") or body.get("error", "No response received.")
+                    else:
+                        answer = f"Backend returned status {resp.status_code}."
+                except requests.exceptions.ConnectionError:
+                    answer = "Could not reach the backend. Please check if it is running."
+                except requests.exceptions.Timeout:
+                    answer = "The request timed out. The query may be too complex — try again."
+                except Exception as exc:
+                    answer = f"An unexpected error occurred: {exc}"
 
-    # -- Session controls --
-    st.markdown("### Session")
+            st.markdown(answer)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Clear Chat", use_container_width=True):
-            st.session_state.messages = []
-            # Tell backend to drop the thread
-            try:
-                requests.delete(
-                    f"{BACKEND_URL}/session/{st.session_state.session_id}",
-                    timeout=10,
-                )
-            except Exception:
-                pass
-            st.session_state.session_id = str(uuid.uuid4())
-            st.rerun()
-    with col2:
-        if st.button("New Session", use_container_width=True):
-            st.session_state.messages = []
-            st.session_state.agent_ready = False
-            st.session_state.file_data = None
-            st.session_state.init_model = ""
-            try:
-                requests.delete(
-                    f"{BACKEND_URL}/session/{st.session_state.session_id}",
-                    timeout=10,
-                )
-            except Exception:
-                pass
-            st.session_state.session_id = str(uuid.uuid4())
-            st.rerun()
+        st.session_state.messages.append({"role": "assistant", "content": answer})
+        st.session_state.file_data = None
 
-# ---------------------------------------------------------------------------
-# Main chat area
-# ---------------------------------------------------------------------------
 
-# Render existing messages
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
-
-# Empty-state prompt
-if not st.session_state.messages:
-    if st.session_state.agent_ready:
-        empty_msg = "Ask any research question. Attach files from the sidebar for document-aware queries."
-    else:
-        empty_msg = "Set your API key in the sidebar to get started, then ask any research question."
-    st.markdown(
-        f"""
-        <div class="empty-state">
-            <h2>What would you like to research?</h2>
-            <p>{empty_msg}</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-# Chat input
-if prompt := st.chat_input("Ask a research question...", disabled=not st.session_state.agent_ready):
-    # Show user message
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    # Build request payload
-    form_data = {
-        "message": prompt,
-        "session_id": st.session_state.session_id,
-    }
-    files = None
-    if st.session_state.file_data is not None:
-        fd = st.session_state.file_data
-        files = {"file": (fd["name"], fd["bytes"], fd["mime"])}
-
-    # Call the backend
-    with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
-            try:
-                resp = requests.post(
-                    f"{BACKEND_URL}/chat",
-                    data=form_data,
-                    files=files,
-                    timeout=300,
-                )
-                if resp.status_code == 200:
-                    body = resp.json()
-                    answer = body.get("response") or body.get("error", "No response received.")
-                else:
-                    answer = f"Backend returned status {resp.status_code}."
-            except requests.exceptions.ConnectionError:
-                answer = "Could not reach the backend. Please check if it is running."
-            except requests.exceptions.Timeout:
-                answer = "The request timed out. The query may be too complex — try again."
-            except Exception as exc:
-                answer = f"An unexpected error occurred: {exc}"
-
-        st.markdown(answer)
-
-    st.session_state.messages.append({"role": "assistant", "content": answer})
-
-    # Clear file after sending so it's not re-sent on every message
-    st.session_state.file_data = None
+# ╔═════════════════════════════════════════════════════════════════════════╗
+# ║  ROUTER                                                                ║
+# ╚═════════════════════════════════════════════════════════════════════════╝
+if st.session_state.agent_ready:
+    render_chat_page()
+else:
+    render_setup_page()
